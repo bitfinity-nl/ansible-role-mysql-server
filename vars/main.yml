@@ -1,0 +1,6 @@
+---
+  # vars: Variable(s) for MySQL
+
+  # Root Account
+  MySQL_ROOT_ACCOUNT: root
+  MySQL_ROOT_PASSWORD: Wachtw0ord123

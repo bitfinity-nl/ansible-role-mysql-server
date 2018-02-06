@@ -1,0 +1,53 @@
+---
+  # Role: MySQL server on Ubuntu 16.04
+  #
+  # Provision MySQL awnsers
+  # Install Database
+  #
+  #  Set vars in Playbook or in vars dir of this role:
+  #   MySQL_ROOT_PASSWORD: Wachtw0ord123
+
+  - name: "Set MySQL root password before installing"
+    debconf:
+      name: 'mysql-server'
+      question: mysql-server/root_password
+      value: "{{ MySQL_ROOT_PASSWORD | quote}}"
+      vtype: password
+
+  - name: "Confirm MySQL root password before installing"
+    debconf:
+      name: 'mysql-server'
+      question: mysql-server/root_password
+      value: "{{ MySQL_ROOT_PASSWORD | quote}}"
+      vtype: password
+
+  - name: "Install MySQL server"
+    apt:
+      name: "{{ item }}"
+      update_cache: yes
+      state: present
+    with_items:
+      - mysql-server
+      - mysql-client
+      - mysql-common
+      - python-mysqldb
+
+  - name: "Deletes anonymous MySQL server user for localhost"
+    mysql_user:
+      user: ""
+      state: absent
+      login_user: root
+      login_password: "{{ MySQL_ROOT_PASSWORD }}"
+
+#  - name: "Secures the MySQL root user"
+#    mysql_user:
+#      user: root
+#      password: "{{ MySQL_root_pass }}"
+#      host: "{{ item }}"
+#      login_user: root
+#      login_password: "{{MySQL_root_pass}}"
+#    with_items:
+#      - 127.0.0.1
+#      - localhost
+#      - ::1
+#      - "{{ ansible_fqdn }}"
