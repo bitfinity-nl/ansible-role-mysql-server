@@ -8,18 +8,10 @@
   #   MySQL_ROOT_PASSWORD: Wachtw0ord123
 
   - name: "Set MySQL root password before installing"
-    debconf:
-      name: 'mysql-server'
-      question: mysql-server/root_password
-      value: "{{ MySQL_ROOT_PASSWORD | quote}}"
-      vtype: password
+    raw: echo "mysql-server-5.7  mysql-server/root_password password {{ MySQL_ROOT_PASSWORD }}" | debconf-set-selections
 
   - name: "Confirm MySQL root password before installing"
-    debconf:
-      name: 'mysql-server'
-      question: mysql-server/root_password
-      value: "{{ MySQL_ROOT_PASSWORD | quote}}"
-      vtype: password
+    raw: echo "mysql-server-5.7  mysql-server/root_password_again password {{ MySQL_ROOT_PASSWORD }}" | debconf-set-selections
 
   - name: "Install MySQL server"
     apt:
@@ -27,7 +19,7 @@
       update_cache: yes
       state: present
     with_items:
-      - mysql-server
+      - mysql-server-5.7
       - mysql-client
       - mysql-common
       - python-mysqldb
@@ -39,15 +31,15 @@
       login_user: root
       login_password: "{{ MySQL_ROOT_PASSWORD }}"
 
-#  - name: "Secures the MySQL root user"
-#    mysql_user:
-#      user: root
-#      password: "{{ MySQL_root_pass }}"
-#      host: "{{ item }}"
-#      login_user: root
-#      login_password: "{{MySQL_root_pass}}"
-#    with_items:
-#      - 127.0.0.1
-#      - localhost
-#      - ::1
-#      - "{{ ansible_fqdn }}"
+  - name: "Secures the MySQL root user"
+    mysql_user:
+      user: root
+      password: "{{ MySQL_ROOT_PASSWORD }}"
+      host: "{{ item }}"
+      login_user: root
+      login_password: "{{MySQL_ROOT_PASSWORD }}"
+    with_items:
+      - 127.0.0.1
+      - localhost
+      - ::1
+      - "{{ ansible_fqdn }}"
