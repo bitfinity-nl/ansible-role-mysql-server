@@ -15,10 +15,11 @@
 
   - name: "Install MySQL server"
     apt:
-      name: "{{ item }}"
+      name: "{{ packages }}"
       update_cache: yes
       state: present
-    with_items:
+    vars:
+      packages:
       - mysql-server-5.7
       - mysql-client
       - mysql-common
